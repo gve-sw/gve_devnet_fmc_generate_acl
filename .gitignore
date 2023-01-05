@@ -1,0 +1,13 @@
+# Ignore python virtual env
+venv
+
+__pycache__/
+
+# Ignore ide files
+.DS_Store
+.idea/
+
+# Ignore *.txt block list files (make an exception for requirements.txt)
+*.txt
+
+!requirements.txt
