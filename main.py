@@ -97,7 +97,7 @@ class FirePower:
         group = self.getNetworkGroup(group_name)
 
         if group:
-            # group found, overwrite literals only
+            # group found, overwrite literals and objects only
             data = {
                 'name': group['name'],
                 'id': group['id'],
@@ -147,22 +147,33 @@ class FirePower:
         acl = self.getExtendedACL(acl_name)
 
         if acl:
-            # group found, overwrite sourceNetwork objects only
+            # acl found, add new entry if not already present
             data = {
                 'name': acl['name'],
                 'id': acl['id'],
-                "entries": [
-                    {
-                        "action": acl['entries'][0]['action'],
-                        "logging": acl['entries'][0]['logging'],
-                        "logInterval": acl['entries'][0]['logInterval'],
-                        "logLevel": acl['entries'][0]['logLevel'],
-                        "sourceNetworks": {
-                            "objects": network_groups
-                        }
-                    }
-                ]
+                "entries": acl['entries']
             }
+
+            # iterate through entries, check if network group entry already present, complete processing if matching
+            # entry found
+            for entry in data['entries']:
+                id = entry['sourceNetworks']['objects'][0]['id']
+
+                if id == network_groups[0]['id']:
+                    return True
+
+            #  add new entry
+            data["entries"].append(
+                {
+                    "action": "DENY",
+                    "logging": "DEFAULT",
+                    "logInterval": 300,
+                    "logLevel": "INFORMATIONAL",
+                    "sourceNetworks": {
+                        "objects": network_groups
+                    }
+                }
+            )
 
             resp = self.putData(url + f"/{data['id']}", data)
         else:
@@ -323,7 +334,7 @@ def processBlockList(fmc, file_name, country_name):
     return group_name
 
 
-def generateAcl(fmc, country_name, group_name):
+def generateAcl(fmc, group_name, acl_name):
     """
     Create or update country block list extended acl based on network object(s)
     """
@@ -335,9 +346,6 @@ def generateAcl(fmc, country_name, group_name):
         console.print("Found: [green]{}[/]".format(net_group['name']))
     else:
         console.print("[red]Error, network group not found... skipping: {}[/]".format(group_name))
-
-    # Extended ACL Name
-    acl_name = country_name + '-block-acl'
 
     # Create/update acl from network groups list
     resp = fmc.createExtendedACL(acl_name, [{"id": net_group["id"]}])
@@ -377,7 +385,10 @@ def main():
 
     # Generate and/or update extended ACL List
     console.print(Panel.fit("Create/Update Extended ACL(s)", title="Step 2"))
-    generateAcl(fmc, country_name, group_name)
+
+    # Enter Country ACL Name (if it exists, it will be modified, otherwise created)
+    acl_name = console.input('[green]Extended ACL Name:[/] ')
+    generateAcl(fmc, group_name, acl_name)
 
     return
 
