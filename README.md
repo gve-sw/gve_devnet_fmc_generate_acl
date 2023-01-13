@@ -1,6 +1,6 @@
-# GVE DevNet FMC Generate ACL from Block List
+# GVE DevNet FMC Generate ACL from Blocklist
 
-This script creates an FMC Network Group object from a Country IP Block List obtained from [countryipblocks.net](https://www.countryipblocks.net/acl.php). The Network Group object is then used to create or update a specified extended ACL.
+This script creates an FMC Network Group object from a Country IP Blocklist obtained from [countryipblocks.net](https://www.countryipblocks.net/acl.php). The Network Group object is then used to create or update a specified extended ACL.
 
 ## Contacts
 * Trevor Maco
@@ -11,7 +11,7 @@ This script creates an FMC Network Group object from a Country IP Block List obt
 
 ## Prerequisites
 1. Ensure you have the FQDN or IP of the FMC instance, and a username/password for an admin user. **Note**: these values will be added to a config file.
-2. Download a Country IP Block List from `countryipblocks.net`:
+2. Download a Country IP Blocklist from `countryipblocks.net`:
    1. Select a Country
    2. Select `Network-Object` as the format. **Note**: data format is important, the code may not work with other formats!
    3. Select `Create ACL`, copy ACL contents to clipboard, create a new text file in the code's home directory, and paste the contents. **Note**: The file can be named anything (for example: `ipblocks.txt`)

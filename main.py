@@ -110,7 +110,7 @@ class FirePower:
             # create new group
             data = {
                 'name': group_name,
-                'description': 'Created from Country IP Block list',
+                'description': 'Created from Country IP Blocklist',
                 "overridable": False,
                 'objects': network_objects,
                 "literals": network_literals
